@@ -1,0 +1,24 @@
+# Pinned environment for reading the stored 3APNa pipeline.
+#
+# The .joblib was written with an older scikit-learn tree layout. Newer stacks
+# fail in three different ways, so the pins below are not optional:
+#
+#   scikit-survival >= 0.23   AttributeError: DummySurvivalEstimator
+#   scikit-learn    >= 1.3    ValueError: node array has an incompatible dtype
+#   numpy           >= 2.0    ValueError: numpy.dtype size changed
+#
+# These versions are only needed to RUN THE EXPORT (tools/export_model.py) and
+# to regenerate the reference predictions (tools/verify.py). The published
+# calculator and tests/verify.js need neither Python nor the model object.
+#
+#   python3.11 -m venv .venv
+#   . .venv/bin/activate
+#   pip install -r requirements-lock.txt
+
+numpy==1.26.4
+scipy==1.12.0
+scikit-learn==1.2.2
+scikit-survival==0.21.0
+joblib==1.6.0
+pandas==3.0.5
+openpyxl==3.1.5

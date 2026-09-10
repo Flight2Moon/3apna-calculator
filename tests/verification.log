@@ -1,0 +1,7 @@
+3APNa engine check — 2000 reference patients from gbsa_pipeline_c2_A.joblib
+  model version      1.0.0 (sha256 8225c163fe52eea3…)
+  linear predictor   max |JS − Python| = 1.066e-14  (tolerance 1e-9)
+  survival S(t)      max |JS − Python| = 3.164e-15  (tolerance 1e-9)
+  tier monotonicity  ok — tier never improves as the horizon lengthens
+
+PASSED

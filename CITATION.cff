@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+title: 3APNa Survival Calculator
+message: If you use this calculator, please cite the paper it implements.
+type: software
+authors:
+  - family-names: "[FAMILY NAME]"
+    given-names: "[GIVEN NAME]"
+version: 1.0.0
+license: "[LICENCE]"
+repository-code: "[REPOSITORY URL]"
+abstract: >-
+  Browser-based calculator for the 3APNa model: overall survival at 6, 12 and
+  24 months after transarterial chemoembolisation for hepatocellular carcinoma,
+  from albumin, AFP, age, platelet count and sodium.

@@ -1,0 +1,12 @@
+# Never commit the fitted model object or any cohort data.
+*.joblib
+*.pkl
+*.xlsx
+*.xls
+*.csv
+!tests/reference_predictions.csv
+
+.venv/
+__pycache__/
+.DS_Store
+node_modules/

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3APNa Survival Calculator</title>
+<meta name="description" content="Predicted overall survival at 6, 12 and 24 months after transarterial chemoembolisation for hepatocellular carcinoma, from five routine variables. Research use only.">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="masthead__top">
+      <div>
+        <h1>3APNa Survival Calculator</h1>
+        <p>Overall survival after transarterial chemoembolisation in hepatocellular carcinoma</p>
+      </div>
+      <div class="badges">
+        <span class="badge mono" id="model-version">v1.0.0</span>
+        <span class="badge badge--ok">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Runs entirely in your browser
+        </span>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-calculator" aria-controls="panel-calculator" aria-selected="true" type="button">Calculator</button>
+      <button class="tab" role="tab" id="tab-model" aria-controls="panel-model" aria-selected="false" type="button">Model</button>
+      <button class="tab" role="tab" id="tab-validation" aria-controls="panel-validation" aria-selected="false" type="button">Validation</button>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+
+  <noscript>
+    <div class="card" style="margin-bottom:16px">
+      <p style="margin:0">This calculator needs JavaScript. All computation happens locally in your browser — nothing is sent anywhere.</p>
+    </div>
+  </noscript>
+
+  <section id="panel-calculator" role="tabpanel" aria-labelledby="tab-calculator">
+    <div class="columns">
+
+      <div>
+        <div class="card">
+          <div class="card__head">
+            <span class="card__label">Patient values<span class="tag" id="example-chip" style="margin-left:8px">EXAMPLE</span></span>
+            <button type="button" id="reset" class="tab" style="padding:0;color:var(--accent)">Reset</button>
+          </div>
+
+          <div class="modes" role="group" aria-label="Input mode">
+            <button class="mode" type="button" id="mode-type" aria-pressed="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h6"/></svg>
+              Enter values
+            </button>
+            <button class="mode" type="button" id="mode-explore" aria-pressed="false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 8h18M3 16h18"/><circle cx="9" cy="8" r="2.6" fill="var(--surface)"/><circle cx="16" cy="16" r="2.6" fill="var(--surface)"/></svg>
+              Explore
+            </button>
+          </div>
+
+          <p class="mode-hint" id="mode-hint"></p>
+
+          <div id="fields"></div>
+        </div>
+
+        <div class="card">
+          <span class="card__label">Units</span>
+          <p style="margin:10px 0 0;font-size:12px;color:var(--ink-2);line-height:1.6">
+            The model was fitted with albumin in g/dL. If your laboratory reports g/L, switch below and the value is converted for you.
+            Platelet count is identical in ×10³/µL and ×10⁹/L; AFP is identical in ng/mL and µg/L.
+          </p>
+          <div class="unitgroup" role="group" aria-label="Albumin unit">
+            <button type="button" id="unit-dl" aria-pressed="true">g/dL</button>
+            <button type="button" id="unit-l" aria-pressed="false">g/L</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="horizons" id="horizons"></div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="card__head">
+            <h2 class="card__title">Predicted survival</h2>
+            <span class="card__note">Breslow baseline from the development cohort</span>
+          </div>
+          <div class="chart-wrap"><svg id="curve" viewBox="0 0 700 232" style="width:100%;min-width:560px;height:auto" role="img" aria-labelledby="curve-title"><title id="curve-title">Predicted survival curve over 24 months</title></svg></div>
+        </div>
+
+        <div class="card">
+          <div class="card__head">
+            <h2 class="card__title">What drives this result</h2>
+            <span class="card__note">vs a median patient · log-hazard units</span>
+          </div>
+          <div class="contrib" id="contrib"></div>
+          <div class="legend">
+            <div><i style="background:var(--low)"></i> Lowers predicted risk</div>
+            <div><i style="background:var(--high)"></i> Raises predicted risk</div>
+          </div>
+          <p style="margin:12px 0 0;font-size:11px;color:var(--faint);line-height:1.6">
+            The model is a sum of five single-variable step functions, so each bar is that variable's exact
+            contribution to the linear predictor — not an approximation or an attribution heuristic.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stickybar">
+      <div class="stickybar__grid" id="sticky"></div>
+    </div>
+  </section>
+
+  <section id="panel-model" class="hidden prose" role="tabpanel" aria-labelledby="tab-model">
+    <h3>What this tool computes</h3>
+    <p>
+      3APNa is a gradient-boosted survival model (<code>GradientBoostingSurvivalAnalysis</code>,
+      Cox partial-likelihood loss) fitted to five variables recorded before transarterial
+      chemoembolisation: albumin, platelet count, alpha-fetoprotein, sodium and age.
+    </p>
+    <p>
+      Every boosting stage is a depth-1 stump, so the fitted ensemble is exactly additive. It collapses,
+      with no loss of precision, into one step function per variable:
+    </p>
+    <pre class="formula">F(x) = c + g_albumin(x) + g_platelet(x) + g_AFP(x) + g_sodium(x) + g_age(x)
+
+S(t | x) = exp( -H0(t) · exp(F(x)) )
+risk(t)  = 1 - S(t | x)</pre>
+    <p>
+      <code>H0</code> is the Breslow baseline cumulative hazard estimated on the development cohort.
+      Risk groups come from cut-offs fixed during model development: <strong>RO</strong> separates Low from
+      Intermediate (a rule-out boundary, chosen for sensitivity) and <strong>RI</strong> separates
+      Intermediate from High (a rule-in boundary, chosen for specificity).
+    </p>
+
+    <h3>Fitted configuration</h3>
+    <div class="table-wrap"><table id="hyper"></table></div>
+
+    <h3>Reproducibility</h3>
+    <p>
+      The browser implementation is checked against the original Python pipeline on every export: the
+      collapsed step functions must reproduce <code>pipeline.predict</code> to within 1e-9, and
+      <code>tests/verify.js</code> re-checks the JavaScript against Python reference scores. The agreement
+      log is in the repository.
+    </p>
+    <p id="provenance" class="mono" style="font-size:11px;color:var(--faint)"></p>
+  </section>
+
+  <section id="panel-validation" class="hidden prose" role="tabpanel" aria-labelledby="tab-validation">
+    <h3>Discrimination</h3>
+    <p>
+      Area under the ROC curve for survival status at each horizon, excluding patients censored before the
+      horizon. Internal figures come from the held-out test set; external figures from an independent
+      two-centre cohort.
+    </p>
+    <div class="table-wrap"><table>
+      <caption>Development cohort n = 1,172 · internal test n = 294 · external cohort n = 353</caption>
+      <thead><tr><th>Horizon</th><th>Internal AUROC</th><th>95% CI</th><th>Events</th><th>External AUROC</th><th>Events</th></tr></thead>
+      <tbody>
+        <tr><td>6 months</td><td>0.867</td><td>0.809–0.925</td><td>18</td><td>0.857</td><td>15</td></tr>
+        <tr><td>12 months</td><td>0.819</td><td>0.759–0.877</td><td>47</td><td>0.827</td><td>35</td></tr>
+        <tr><td>24 months</td><td>0.751</td><td>0.686–0.810</td><td>93</td><td>0.781</td><td>72</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:10px">Harrell's C-index on the internal test set: <strong>0.689</strong> (147 events among 294 patients).</p>
+
+    <h3>Risk group boundaries</h3>
+    <p>Operating characteristics on the internal test set, excluding early censoring.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Horizon</th><th>RO cut-off</th><th>Sens</th><th>NPV</th><th>RI cut-off</th><th>Spec</th><th>Low / Int / High</th></tr></thead>
+      <tbody>
+        <tr><td>6 months</td><td>0.0874</td><td>0.889</td><td>0.990</td><td>0.1743</td><td>0.908</td><td>67 / 22 / 11 %</td></tr>
+        <tr><td>12 months</td><td>0.1337</td><td>0.915</td><td>0.968</td><td>0.3206</td><td>0.904</td><td>43 / 42 / 15 %</td></tr>
+        <tr><td>24 months</td><td>0.2403</td><td>0.849</td><td>0.851</td><td>0.4303</td><td>0.868</td><td>34 / 40 / 26 %</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li>Developed in patients treated with transarterial chemoembolisation. It does not apply to other treatments or to untreated disease.</li>
+      <li>Predictions are averages over patients with the same five values. They are not statements about an individual outcome.</li>
+      <li>Absolute probabilities depend on the baseline hazard of the development cohort. A population with different survival will need recalibration.</li>
+      <li>Youden-derived thresholds reported in the source analysis were computed on the test set; the risk-group boundaries above were fixed separately.</li>
+      <li>Values far outside the development range are extrapolation. The calculator flags them but still returns a number.</li>
+    </ul>
+
+    <h3>Citation</h3>
+    <p class="mono" style="font-size:12px">[AUTHORS]. [TITLE]. [JOURNAL]. [YEAR];[VOL]:[PAGES]. doi:[DOI]</p>
+    <p style="font-size:12px;color:var(--faint)">Fill this in once the paper has a DOI, and archive the repository (for example with Zenodo) so the link stays resolvable.</p>
+  </section>
+
+</main>
+
+<footer class="legal">
+  <div class="legal__inner">
+    <p>
+      <strong>Research use only. This is not a medical device.</strong>
+      It does not diagnose, treat or determine management, and it does not replace clinical judgement.
+      Values you enter stay in this browser: nothing is transmitted, logged or stored.
+    </p>
+    <div class="badges">
+      <span class="badge mono" id="footer-version"></span>
+    </div>
+  </div>
+</footer>
+
+<script src="model/model.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
