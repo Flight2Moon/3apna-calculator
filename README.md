@@ -10,9 +10,11 @@ carcinoma, from five routine variables — **A**lbumin, **A**FP, **A**ge,
 ## What it is
 
 A static web page. There is no server, no build step, no database and no
-analytics. Everything — the model, the arithmetic, the chart — runs in the
-visitor's browser, so entered values never leave the device. That also means the
-page keeps working offline and can be archived as-is.
+analytics, and the page makes **no network requests at all** — not even for
+fonts. Everything — the model, the arithmetic, the chart — runs in the visitor's
+browser, so entered values never leave the device and no third party learns that
+the page was opened. That also means it renders identically offline, inside a
+hospital network, and from an archived copy.
 
 Open `index.html` in any browser, or serve the folder over GitHub Pages.
 
