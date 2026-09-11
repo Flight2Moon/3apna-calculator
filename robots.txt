@@ -1,0 +1,5 @@
+# The calculator is reachable to anyone with the link, but it should not be
+# indexed while the study it implements is unpublished. Remove this file (and
+# the noindex meta tag in index.html) when the paper is out.
+User-agent: *
+Disallow: /

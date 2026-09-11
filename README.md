@@ -52,8 +52,10 @@ tools/export_model.py             .joblib  ->  model/
 tools/verify.py                   .joblib  ->  tests/reference_predictions.csv
 tests/verify.js                   JavaScript vs Python agreement check
 tests/reference_predictions.csv   2,000 reference predictions (synthetic inputs)
+tests/MANUAL_CHECKS.md            two-minute browser checklist before publishing
 docs/MODEL_CARD.md
 requirements-lock.txt             pinned versions needed to read the .joblib
+robots.txt                        keeps the page out of search results for now
 ```
 
 `model/`, `tests/reference_predictions.csv` and the page itself carry no
@@ -83,6 +85,12 @@ drives all three horizons through horizon-specific cut-offs, so it must be
 impossible for a patient to be High at 6 months and Low at 24. The test sweeps
 the linear predictor and confirms the tier never improves as the horizon
 lengthens.
+
+This proves the arithmetic, not the interface. The worst bug this page has had
+was purely in the UI — typing into a field re-rendered it and dropped focus, so
+no value longer than one character could be entered, while every number the
+engine produced stayed correct. `tests/MANUAL_CHECKS.md` is the two-minute
+browser pass that catches that class of failure; run it before publishing.
 
 ## Regenerating from the model object
 
@@ -114,6 +122,18 @@ Neither the `.joblib` nor the cohort workbook belongs in this repository.
 2. Settings → Pages → Source: *Deploy from a branch*, branch `main`, folder `/ (root)`.
 3. The `.nojekyll` file is already present so Pages serves the directories as-is.
 
+### Search visibility
+
+While the study is unpublished the page carries `<meta name="robots"
+content="noindex, nofollow">` and ships a `robots.txt` that disallows crawling.
+Anyone with the link can still open it; it simply will not appear in search
+results, so unpublished performance figures are not surfaced to people who were
+not given the address. **Remove both when the paper is out** — the meta tag in
+`index.html` and the `Disallow` line in `robots.txt`.
+
+Note that this is a request crawlers honour, not access control. If the figures
+must not be reachable at all, take the repository private instead.
+
 For a citable, permanent link, connect the repository to Zenodo and cut a
 release; cite that DOI in the paper rather than a bare GitHub URL. Domains move
 — `breast.predict.nhs.uk` now redirects to `breast.predict.cam` — and a link
@@ -131,3 +151,12 @@ that dies takes the calculator with it.
 
 Add one before publishing. MIT for the code and CC BY 4.0 for the model
 parameters is a common pairing for research calculators.
+
+## Accessibility
+
+Colour contrast, type sizes and hit targets are checked rather than assumed.
+Every text tone clears WCAG AA (4.5:1) against its own surface in both light and
+dark themes — 5.1:1 is the lightest tone used — and every control is at least
+44 px tall. The tab strip implements the full ARIA tab pattern (arrow keys,
+Home/End, roving tabindex), and the survival chart carries a `<title>` that
+names the three predicted probabilities for screen readers.

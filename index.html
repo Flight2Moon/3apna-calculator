@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>3APNa Survival Calculator</title>
 <meta name="description" content="Predicted overall survival at 6, 12 and 24 months after transarterial chemoembolisation for hepatocellular carcinoma, from five routine variables. Research use only.">
-<meta name="robots" content="index, follow">
+<!-- Not indexed while the paper is unpublished. The page stays reachable to
+     anyone who has the link; it simply does not appear in search results. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#2e4a87" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1418" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="3APNa Survival Calculator">
+<meta property="og:description" content="Predicted overall survival at 6, 12 and 24 months after TACE for hepatocellular carcinoma. Research use only.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232e4a87'/%3E%3Cpath d='M5 8h5v4h5v6h5v7h7' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -16,13 +24,6 @@
       <div>
         <h1>3APNa Survival Calculator</h1>
         <p>Overall survival after transarterial chemoembolisation in hepatocellular carcinoma</p>
-      </div>
-      <div class="badges">
-        <span class="badge mono" id="model-version">v1.0.0</span>
-        <span class="badge badge--ok">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-          Runs entirely in your browser
-        </span>
       </div>
     </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
@@ -41,14 +42,14 @@
     </div>
   </noscript>
 
-  <section id="panel-calculator" role="tabpanel" aria-labelledby="tab-calculator">
+  <section id="panel-calculator" role="tabpanel" aria-labelledby="tab-calculator" tabindex="0">
     <div class="columns">
 
       <div>
         <div class="card">
           <div class="card__head">
             <span class="card__label">Patient values<span class="tag" id="example-chip" style="margin-left:8px">EXAMPLE</span></span>
-            <button type="button" id="reset" class="tab" style="padding:0;color:var(--accent)">Reset</button>
+            <button type="button" id="reset" class="linkbtn">Reset to example</button>
           </div>
 
           <div class="modes" role="group" aria-label="Input mode">
@@ -114,7 +115,7 @@
     </div>
   </section>
 
-  <section id="panel-model" class="hidden prose" role="tabpanel" aria-labelledby="tab-model">
+  <section id="panel-model" class="hidden prose" role="tabpanel" aria-labelledby="tab-model" tabindex="0">
     <h3>What this tool computes</h3>
     <p>
       3APNa is a gradient-boosted survival model (<code>GradientBoostingSurvivalAnalysis</code>,
@@ -149,7 +150,7 @@ risk(t)  = 1 - S(t | x)</pre>
     <p id="provenance" class="mono" style="font-size:11px;color:var(--faint)"></p>
   </section>
 
-  <section id="panel-validation" class="hidden prose" role="tabpanel" aria-labelledby="tab-validation">
+  <section id="panel-validation" class="hidden prose" role="tabpanel" aria-labelledby="tab-validation" tabindex="0">
     <h3>Discrimination</h3>
     <p>
       Area under the ROC curve for survival status at each horizon, excluding patients censored before the
